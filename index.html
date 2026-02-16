@@ -16,9 +16,11 @@
     fetch('smartrf-attend-pro.jsx')
       .then(r => r.text())
       .then(code => {
-        code = code.replace(/^import\s+\{[^}]+\}\s+from\s+["']react["'];?/m, '');
+        code = code.replace(/^import\s+.*from\s+["'].*["'];?.*$/gm, '');
+        code = code.replace(/^export\s+default\s+/gm, '');
+        code = code.replace(/^export\s+/gm, '');
         code += '\n;ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(SmartRFAttendPro));';
-        const transformed = Babel.transform(code, { presets: ['react'] }).code;
+        var transformed = Babel.transform(code, { presets: ['react'] }).code;
         eval(transformed);
       })
       .catch(err => {
