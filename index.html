@@ -10,13 +10,27 @@
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel" data-type="module">
+  <script>
     const { useState, useEffect, useCallback, useRef, useMemo } = React;
-  </script>
-  <script type="text/babel" src="smartrf-attend-pro.jsx" data-type="module"></script>
-  <script type="text/babel">
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(SmartRFAttendPro));
+
+    fetch('smartrf-attend-pro.jsx')
+      .then(r => r.text())
+      .then(code => {
+        // Remove the import line since React is loaded via UMD
+        code = code.replace(/^import\s+\{[^}]+\}\s+from\s+["']react["'];?/m, '');
+        // Transform JSX with Babel
+        const transformed = Babel.transform(code, { presets: ['react'] }).code;
+        // Execute the transformed code
+        const script = document.createElement('script');
+        script.textContent = transformed;
+        document.body.appendChild(script);
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(SmartRFAttendPro));
+      })
+      .catch(err => {
+        document.getElementById('root').innerHTML = '<p style="color:red">Error loading app: ' + err.message + '<\/p>';
+      });
   </script>
 </body>
 </html>
