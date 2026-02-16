@@ -16,20 +16,13 @@
     fetch('smartrf-attend-pro.jsx')
       .then(r => r.text())
       .then(code => {
-        // Remove the import line since React is loaded via UMD
         code = code.replace(/^import\s+\{[^}]+\}\s+from\s+["']react["'];?/m, '');
-        // Transform JSX with Babel
+        code += '\n;ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(SmartRFAttendPro));';
         const transformed = Babel.transform(code, { presets: ['react'] }).code;
-        // Execute the transformed code
-        const script = document.createElement('script');
-        script.textContent = transformed;
-        document.body.appendChild(script);
-        // Render the app
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(SmartRFAttendPro));
+        eval(transformed);
       })
       .catch(err => {
-        document.getElementById('root').innerHTML = '<p style="color:red">Error loading app: ' + err.message + '<\/p>';
+        document.getElementById('root').innerHTML = '<p style="color:red">Error: ' + err.message + '<\/p>';
       });
   </script>
 </body>
